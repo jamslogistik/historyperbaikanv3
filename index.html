@@ -114,13 +114,13 @@
         }
 
         /* Foto Mobil */
-        .photo-container {
-            padding: 10px 0;
+        .foto-mobil-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .mobil-photo {
-            width: 100%;
-            max-width: 150px;
+        .foto-mobil {
+            max-width: 100%;
             height: auto;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -128,7 +128,7 @@
             cursor: pointer;
         }
 
-        .mobil-photo:hover {
+        .foto-mobil:hover {
             transform: scale(1.05);
         }
 
@@ -193,22 +193,6 @@
                 transform: translateY(-5px);
                 box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             }
-
-            .photo-container {
-                order: -1; /* Foto di atas di mobile */
-                border-bottom: 1px solid #eee;
-                padding-bottom: 15px;
-                margin-bottom: 15px;
-            }
-
-            .mobil-photo {
-                max-width: 100%;
-            }
-
-            td[data-label="Foto"] {
-                display: flex;
-                justify-content: center;
-            }
         }
 
         @media (max-width: 480px) {
@@ -254,10 +238,14 @@
             <div class="spinner"></div>
         </div>
 
+        <!-- Foto Mobil -->
+        <div class="foto-mobil-container" id="fotoMobilContainer" style="display: none;">
+            <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" onclick="showFullPhoto(this.src)">
+        </div>
+
         <table id="hasil" style="display:none;">
             <thead>
                 <tr>
-                    <th>Foto</th>
                     <th>Plat Nomor</th>
                     <th>Tanggal Perbaikan</th>
                     <th>Tanggal Selesai</th>
@@ -295,17 +283,16 @@
                 tbody.innerHTML = "";
 
                 if (data.length > 0) {
+                    // Tampilkan foto mobil
+                    document.getElementById('fotoMobilContainer').style.display = 'block';
+                    document.getElementById('fotoMobil').src = data[0].foto;
+
+                    // Tampilkan data riwayat
                     data.forEach(item => {
                         let tanggalPerbaikan = formatTanggal(item.tanggal_perbaikan);
                         let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
                         let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
                         let row = `<tr>
-                            <td data-label="Foto">
-                                <div class="photo-container">
-                                    <img src="${item.foto}" class="mobil-photo" alt="Foto Mobil ${item.plat}" 
-                                         onclick="showFullPhoto('${item.foto}')">
-                                </div>
-                            </td>
                             <td>
                                 <div class="label-container">
                                     <i class="fas fa-car"></i>
