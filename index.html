@@ -116,19 +116,20 @@
         /* Foto Mobil */
         .foto-mobil-container {
             text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            margin-bottom: 20px;
         }
 
         .foto-mobil {
             max-width: 100%;
             height: auto;
-            max-height: 400px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .foto-mobil:hover {
+            transform: scale(1.05);
         }
 
         /* Responsive Design */
@@ -239,9 +240,7 @@
 
         <!-- Foto Mobil -->
         <div class="foto-mobil-container" id="fotoMobilContainer" style="display: none;">
-            <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" 
-                 onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Foto+Tidak+Tersedia';"
-                 onclick="showFullPhoto(this.src)">
+            <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" onclick="showFullPhoto(this.src)">
         </div>
 
         <table id="hasil" style="display:none;">
@@ -273,85 +272,73 @@
             document.querySelector('.loading').style.display = 'block';
             try {
                 if (!barcode) return;
-                let url = `https://script.google.com/macros/s/AKfycbwLUE-sNpR6lfBl5qE9w9iVCh_JLIX1zlPgJWflVgYtsrvF6hfGCws7QWeQ180Qcys/exec?barcode=${barcode}`;
+                let url = `https://script.google.com/macros/s/AKfycbzMegBOW2XmANoG5ET-wM226DosTpwA2ndmGn5beBTQ_JvAeEqtT0EXrrB3h8e6WqQ/exec?barcode=${barcode}`;
                 let response = await fetch(url);
-                
-                // Tambahkan error handling untuk response
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
                 let data = await response.json();
 
-                // Handle jika data kosong
-                if (!data || data.length === 0) {
-                    throw new Error('Data tidak ditemukan');
-                }
+                data.sort((a, b) => new Date(b.tanggal_perbaikan) - new Date(a.tanggal_perbaikan));
 
-                // Tampilkan foto
-                const fotoContainer = document.getElementById('fotoMobilContainer');
-                const fotoElement = document.getElementById('fotoMobil');
-                
-                fotoContainer.style.display = 'block';
-                fotoElement.src = data[0].foto + '?t=' + new Date().getTime(); // Cache busting
-
-                // Tampilkan data riwayat
                 let tabel = document.getElementById("hasil");
                 let tbody = document.getElementById("dataRiwayat");
                 tbody.innerHTML = "";
 
-                data.forEach(item => {
-                    let tanggalPerbaikan = formatTanggal(item.tanggal_perbaikan);
-                    let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
-                    let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
-                    let row = `<tr>
-                        <td>
-                            <div class="label-container">
-                                <i class="fas fa-car"></i>
-                                <span>Plat Nomor</span>
-                            </div>
-                            ${item.plat}
-                        </td>
-                        <td>
-                            <div class="label-container">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>Tanggal Perbaikan</span>
-                            </div>
-                            ${tanggalPerbaikan}
-                        </td>
-                        <td>
-                            <div class="label-container">
-                                <i class="fas fa-calendar-check"></i>
-                                <span>Tanggal Selesai</span>
-                            </div>
-                            ${tanggalSelesai}
-                        </td>
-                        <td>
-                            <div class="label-container">
-                                <i class="fas fa-cogs"></i>
-                                <span>Jenis Perbaikan</span>
-                            </div>
-                            ${item.jenis}
-                        </td>
-                        <td>
-                            <div class="label-container">
-                                <i class="fas fa-info-circle"></i>
-                                <span>Status</span>
-                            </div>
-                            <span class="status ${statusClass}">${item.status}</span>
-                        </td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-                tabel.style.display = "table";
+                if (data.length > 0) {
+                    // Tampilkan foto mobil
+                    document.getElementById('fotoMobilContainer').style.display = 'block';
+                    document.getElementById('fotoMobil').src = data[0].foto;
+
+                    // Tampilkan data riwayat
+                    data.forEach(item => {
+                        let tanggalPerbaikan = formatTanggal(item.tanggal_perbaikan);
+                        let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
+                        let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
+                        let row = `<tr>
+                            <td>
+                                <div class="label-container">
+                                    <i class="fas fa-car"></i>
+                                    <span>Plat Nomor</span>
+                                </div>
+                                ${item.plat}
+                            </td>
+                            <td>
+                                <div class="label-container">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Tanggal Perbaikan</span>
+                                </div>
+                                ${tanggalPerbaikan}
+                            </td>
+                            <td>
+                                <div class="label-container">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span>Tanggal Selesai</span>
+                                </div>
+                                ${tanggalSelesai}
+                            </td>
+                            <td>
+                                <div class="label-container">
+                                    <i class="fas fa-cogs"></i>
+                                    <span>Jenis Perbaikan</span>
+                                </div>
+                                ${item.jenis}
+                            </td>
+                            <td>
+                                <div class="label-container">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Status</span>
+                                </div>
+                                <span class="status ${statusClass}">${item.status}</span>
+                            </td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                    tabel.style.display = "table";
+                } else {
+                    alert("Data tidak ditemukan!");
+                    tabel.style.display = "none";
+                }
             } catch (error) {
                 console.error('Error:', error);
-                alert(error.message || "Terjadi kesalahan saat memuat data!");
-                
-                // Tampilkan placeholder jika error
-                const fotoContainer = document.getElementById('fotoMobilContainer');
-                fotoContainer.style.display = 'block';
-                document.getElementById('fotoMobil').src = 'https://via.placeholder.com/600x400?text=Foto+Tidak+Tersedia';
+                alert("Terjadi kesalahan saat memuat data!");
             } finally {
                 document.querySelector('.loading').style.display = 'none';
             }
