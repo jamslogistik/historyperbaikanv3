@@ -113,18 +113,26 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Tampilan Desktop (Web) */
-        @media (min-width: 769px) {
-            .label-container {
-                display: none;
-            }
-
-            td {
-                text-align: center;
-            }
+        /* Foto Mobil */
+        .photo-container {
+            padding: 10px 0;
         }
 
-        /* Tampilan Mobile */
+        .mobil-photo {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mobil-photo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -185,6 +193,22 @@
                 transform: translateY(-5px);
                 box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             }
+
+            .photo-container {
+                order: -1; /* Foto di atas di mobile */
+                border-bottom: 1px solid #eee;
+                padding-bottom: 15px;
+                margin-bottom: 15px;
+            }
+
+            .mobil-photo {
+                max-width: 100%;
+            }
+
+            td[data-label="Foto"] {
+                display: flex;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -193,13 +217,13 @@
                 padding: 12px;
                 flex-wrap: wrap;
             }
-            
+
             .label-container {
                 flex: 0 0 100%;
                 margin-bottom: 8px;
                 gap: 8px;
             }
-            
+
             .status {
                 flex: 0 0 100%;
                 text-align: left;
@@ -207,7 +231,7 @@
                 padding: 6px 12px;
                 margin-top: 5px;
             }
-            
+
             .header h2 {
                 font-size: 1.4em;
                 padding: 0 10px;
@@ -225,7 +249,7 @@
             <i class="fas fa-car"></i>
             <h2>Riwayat Perbaikan Mobil Jamslogistik</h2>
         </div>
-        
+
         <div class="loading">
             <div class="spinner"></div>
         </div>
@@ -233,6 +257,7 @@
         <table id="hasil" style="display:none;">
             <thead>
                 <tr>
+                    <th>Foto</th>
                     <th>Plat Nomor</th>
                     <th>Tanggal Perbaikan</th>
                     <th>Tanggal Selesai</th>
@@ -259,7 +284,7 @@
             document.querySelector('.loading').style.display = 'block';
             try {
                 if (!barcode) return;
-                let url = `https://script.google.com/macros/s/AKfycbzMegBOW2XmANoG5ET-wM226DosTpwA2ndmGn5beBTQ_JvAeEqtT0EXrrB3h8e6WqQ/exec?barcode=${barcode}`;
+                let url = `https://script.google.com/macros/s/AKfycbwLUE-sNpR6lfBl5qE9w9iVCh_JLIX1zlPgJWflVgYtsrvF6hfGCws7QWeQ180Qcys/exec?barcode=${barcode}`;
                 let response = await fetch(url);
                 let data = await response.json();
 
@@ -275,6 +300,12 @@
                         let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
                         let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
                         let row = `<tr>
+                            <td data-label="Foto">
+                                <div class="photo-container">
+                                    <img src="${item.foto}" class="mobil-photo" alt="Foto Mobil ${item.plat}" 
+                                         onclick="showFullPhoto('${item.foto}')">
+                                </div>
+                            </td>
                             <td>
                                 <div class="label-container">
                                     <i class="fas fa-car"></i>
@@ -324,6 +355,37 @@
             } finally {
                 document.querySelector('.loading').style.display = 'none';
             }
+        }
+
+        function showFullPhoto(url) {
+            const overlay = document.createElement('div');
+            overlay.style = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                cursor: zoom-out;
+            `;
+
+            overlay.onclick = () => document.body.removeChild(overlay);
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.style = `
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 8px;
+                box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            `;
+
+            overlay.appendChild(img);
+            document.body.appendChild(overlay);
         }
 
         let barcode = getQueryParam("barcode");
