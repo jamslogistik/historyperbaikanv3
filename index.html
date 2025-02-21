@@ -113,21 +113,22 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Foto Mobil */
-        .foto-mobil-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    /* Foto Mobil */
+.foto-mobil-container {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
 
-        .foto-mobil {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-
+.foto-mobil {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+}
         .foto-mobil:hover {
             transform: scale(1.05);
         }
@@ -141,7 +142,14 @@
             td {
                 text-align: center;
             }
+
+            .foto-mobil {
+        max-width: 50%; /* Sesuaikan ukuran sesuai kebutuhan */
+        max-height: 300px; /* Batasi tinggi maksimal */
+    }
         }
+
+        
 
         /* Tampilan Mobile */
         @media (max-width: 768px) {
