@@ -116,33 +116,22 @@
         /* Foto Mobil */
         .foto-mobil-container {
             text-align: center;
-            margin-bottom: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
 
         .foto-mobil {
             max-width: 100%;
             height: auto;
+            max-height: 400px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
         }
 
-        .foto-mobil:hover {
-            transform: scale(1.05);
-        }
-
-   @media (min-width: 769px) {
-            .label-container {
-                display: none;
-            }
-
-            td {
-                text-align: center;
-            }
-        }
-
-        /* Tampilan Mobile */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -203,23 +192,6 @@
                 transform: translateY(-5px);
                 box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
             }
-
-              .foto-mobil-container {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .foto-mobil {
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-        }
         }
 
         @media (max-width: 480px) {
@@ -228,13 +200,13 @@
                 padding: 12px;
                 flex-wrap: wrap;
             }
-            
+
             .label-container {
                 flex: 0 0 100%;
                 margin-bottom: 8px;
                 gap: 8px;
             }
-            
+
             .status {
                 flex: 0 0 100%;
                 text-align: left;
@@ -242,7 +214,7 @@
                 padding: 6px 12px;
                 margin-top: 5px;
             }
-            
+
             .header h2 {
                 font-size: 1.4em;
                 padding: 0 10px;
@@ -267,10 +239,10 @@
 
         <!-- Foto Mobil -->
         <div class="foto-mobil-container" id="fotoMobilContainer" style="display: none;">
-        <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" 
-             onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Foto+Tidak+Tersedia';"
-             onclick="showFullPhoto(this.src)">
-    </div>
+            <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Foto+Tidak+Tersedia';"
+                 onclick="showFullPhoto(this.src)">
+        </div>
 
         <table id="hasil" style="display:none;">
             <thead>
@@ -297,7 +269,7 @@
             return new Date(dateString).toLocaleDateString('id-ID', options);
         }
 
-            async function cariRiwayat(barcode) {
+        async function cariRiwayat(barcode) {
             document.querySelector('.loading').style.display = 'block';
             try {
                 if (!barcode) return;
@@ -323,57 +295,55 @@
                 fotoContainer.style.display = 'block';
                 fotoElement.src = data[0].foto + '?t=' + new Date().getTime(); // Cache busting
 
+                // Tampilkan data riwayat
+                let tabel = document.getElementById("hasil");
+                let tbody = document.getElementById("dataRiwayat");
+                tbody.innerHTML = "";
 
-                    // Tampilkan data riwayat
-                    data.forEach(item => {
-                        let tanggalPerbaikan = formatTanggal(item.tanggal_perbaikan);
-                        let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
-                        let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
-                        let row = `<tr>
-                            <td>
-                                <div class="label-container">
-                                    <i class="fas fa-car"></i>
-                                    <span>Plat Nomor</span>
-                                </div>
-                                ${item.plat}
-                            </td>
-                            <td>
-                                <div class="label-container">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>Tanggal Perbaikan</span>
-                                </div>
-                                ${tanggalPerbaikan}
-                            </td>
-                            <td>
-                                <div class="label-container">
-                                    <i class="fas fa-calendar-check"></i>
-                                    <span>Tanggal Selesai</span>
-                                </div>
-                                ${tanggalSelesai}
-                            </td>
-                            <td>
-                                <div class="label-container">
-                                    <i class="fas fa-cogs"></i>
-                                    <span>Jenis Perbaikan</span>
-                                </div>
-                                ${item.jenis}
-                            </td>
-                            <td>
-                                <div class="label-container">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Status</span>
-                                </div>
-                                <span class="status ${statusClass}">${item.status}</span>
-                            </td>
-                        </tr>`;
-                        tbody.innerHTML += row;
-                    });
-                    tabel.style.display = "table";
-                } else {
-                    alert("Data tidak ditemukan!");
-                    tabel.style.display = "none";
-                }
-        
+                data.forEach(item => {
+                    let tanggalPerbaikan = formatTanggal(item.tanggal_perbaikan);
+                    let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
+                    let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
+                    let row = `<tr>
+                        <td>
+                            <div class="label-container">
+                                <i class="fas fa-car"></i>
+                                <span>Plat Nomor</span>
+                            </div>
+                            ${item.plat}
+                        </td>
+                        <td>
+                            <div class="label-container">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Tanggal Perbaikan</span>
+                            </div>
+                            ${tanggalPerbaikan}
+                        </td>
+                        <td>
+                            <div class="label-container">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Tanggal Selesai</span>
+                            </div>
+                            ${tanggalSelesai}
+                        </td>
+                        <td>
+                            <div class="label-container">
+                                <i class="fas fa-cogs"></i>
+                                <span>Jenis Perbaikan</span>
+                            </div>
+                            ${item.jenis}
+                        </td>
+                        <td>
+                            <div class="label-container">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Status</span>
+                            </div>
+                            <span class="status ${statusClass}">${item.status}</span>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+                tabel.style.display = "table";
             } catch (error) {
                 console.error('Error:', error);
                 alert(error.message || "Terjadi kesalahan saat memuat data!");
