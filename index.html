@@ -112,7 +112,30 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+/* Info Mobil */
+.info-mobil {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: left;
+}
 
+.info-mobil p {
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.info-mobil strong {
+    color: var(--primary-color);
+}
+
+.info-mobil i {
+    margin-right: 10px; /* Jarak antara ikon dan teks */
+    color: var(--primary-color); /* Warna ikon */
+    font-size: 1.2em; /* Ukuran ikon */
+}
     /* Foto Mobil */
 .foto-mobil-container {
     text-align: center;
@@ -258,9 +281,20 @@
         </div>
 
         <!-- Foto Mobil -->
-        <div class="foto-mobil-container" id="fotoMobilContainer" style="display: none;">
-            <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" onclick="showFullPhoto(this.src)">
-        </div>
+      <div class="foto-mobil-container" id="fotoMobilContainer" style="display: none;">
+    <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" onclick="showFullPhoto(this.src)">
+ <div class="info-mobil">
+        <p>
+            <i class="fas fa-file-alt"></i> <!-- Ikon untuk KIR -->
+            <strong>KIR:</strong> <span id="infoKIR">-</span>
+        </p>
+        <p>
+            <i class="fas fa-receipt"></i> <!-- Ikon untuk Pajak -->
+            <strong>Pajak:</strong> <span id="infoPajak">-</span>
+        </p>
+    </div>
+</div>
+       
 
         <table id="hasil" style="display:none;">
             <thead>
@@ -291,7 +325,7 @@
             document.querySelector('.loading').style.display = 'block';
             try {
                 if (!barcode) return;
-                let url = `https://script.google.com/macros/s/AKfycbwLUE-sNpR6lfBl5qE9w9iVCh_JLIX1zlPgJWflVgYtsrvF6hfGCws7QWeQ180Qcys/exec?barcode=${barcode}`;
+                let url = `https://script.google.com/macros/s/AKfycbxOiZwXXsyi178Tud2rSPI5YLtbb8Q2DLmTlD1obZkkGeiRH70UR32jg65LIwzuKos/exec?barcode=${barcode}`;
                 let response = await fetch(url);
                 let data = await response.json();
 
@@ -305,6 +339,10 @@
                     // Tampilkan foto mobil
                     document.getElementById('fotoMobilContainer').style.display = 'block';
                     document.getElementById('fotoMobil').src = data[0].foto;
+
+                     // Tampilkan KIR dan Pajak
+                     document.getElementById('infoKIR').textContent = data[0].kir || '-';
+            document.getElementById('infoPajak').textContent = data[0].pajak || '-';
 
                     // Tampilkan data riwayat
                     data.forEach(item => {
