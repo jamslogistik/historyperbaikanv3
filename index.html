@@ -116,9 +116,15 @@
 .info-mobil {
     margin-top: 10px;
     padding: 10px;
-    background: #f8f9fa;
+    background: #ffffff; /* Background putih bersih */
+    border-left: 4px solid #2ecc71; /* Aksen garis kiri hijau segar */
+    border-right: 1px solid #eeeeee;
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
     border-radius: 8px;
     text-align: left;
+    color: #000000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Shadow sangat subtle */
 }
 
 .info-mobil p {
@@ -136,6 +142,9 @@
     color: var(--primary-color); /* Warna ikon */
     font-size: 1.2em; /* Ukuran ikon */
 }
+
+
+        
     /* Foto Mobil */
 .foto-mobil-container {
     text-align: center;
@@ -283,7 +292,10 @@
         <!-- Foto Mobil -->
       <div class="foto-mobil-container" id="fotoMobilContainer" style="display: none;">
     <img src="" class="foto-mobil" id="fotoMobil" alt="Foto Mobil" onclick="showFullPhoto(this.src)">
- <div class="info-mobil">
+
+</div>
+        <!-- info Mobil -->
+         <div class="info-mobil" id="infomobilContainer" style="display: none;" >
         <p>
             <i class="fas fa-file-alt"></i> <!-- Ikon untuk KIR -->
             <strong>KIR:</strong> <span id="infoKIR">-</span>
@@ -293,17 +305,30 @@
             <strong>Pajak:</strong> <span id="infoPajak">-</span>
         </p>
     </div>
-</div>
-       
+        
+       <!-- info tune up Mobil -->
+        <div class="info-mobil" id="tuneupContainer" style="display: none;">
+        <p>
+            <i class="fas fa-cogs"></i> <!-- tuneup mesin -->
+            <strong>Tune UP Mesin:</strong> <span id="mesin">-</span>
+        </p>
+        <p>
+            <i class="fas fa-cogs"></i> <!-- tuneup thermo -->
+            <strong>Tune UP Thermo:</strong> <span id="thermo">-</span>
+        </p>
+    </div>
+        
+       <div style="height: 20px;"></div> 
 
         <table id="hasil" style="display:none;">
             <thead>
                 <tr>
                     <th>Plat Nomor</th>
-                     <th>Jenis Perbaikan</th>
+                    <th>Jenis Perbaikan</th>
                     <th>Form Perbaikan</th>
-                    <th>Tanggal Selesai</th>
+                    <th>Tanggal Selesai</th> 
                     <th>Status</th>
+                    
                 </tr>
             </thead>
             <tbody id="dataRiwayat"></tbody>
@@ -325,7 +350,7 @@
             document.querySelector('.loading').style.display = 'block';
             try {
                 if (!barcode) return;
-                let url = `https://script.google.com/macros/s/AKfycbyp09qHnA5-i763QpKe3F2B1ZdugH7Y_XAKo_fj_C3GfaczAjlj-aNFMQKONnhGGtU/exec?barcode=${barcode}`;
+                let url = `https://script.google.com/macros/s/AKfycbwaZ2vdbspC9hMvfjKB0Ol25GOdG_qkIdFetL9pGMkRWoUYIbd4_8urliCbJMZ0HOE/exec?barcode=${barcode}`;
                 let response = await fetch(url);
                 let data = await response.json();
 
@@ -341,12 +366,18 @@
                     document.getElementById('fotoMobil').src = data[0].foto;
 
                      // Tampilkan KIR dan Pajak
+                    document.getElementById('infomobilContainer').style.display = 'block';
                      document.getElementById('infoKIR').textContent = data[0].kir || '-';
-            document.getElementById('infoPajak').textContent = data[0].pajak || '-';
+                    document.getElementById('infoPajak').textContent = data[0].pajak || '-';
+
+                     // Tampilkan tuneup
+                    document.getElementById('tuneupContainer').style.display = 'block';
+                     document.getElementById('mesin').textContent = data[0].mesin || '-';
+                    document.getElementById('thermo').textContent = data[0].thermo || '-';
 
                     // Tampilkan data riwayat
                     data.forEach(item => {
-                        let tanggalPerbaikan = formatTanggal(item.tanggal_perbaikan);
+                        let tanggalPerbaikan = item.tanggal_perbaikan ? formatTanggal(item.tanggal_perbaikan) : "-";
                         let tanggalSelesai = item.tanggal_selesai ? formatTanggal(item.tanggal_selesai) : "-";
                         let statusClass = item.status.toLowerCase() === "selesai" ? "selesai" : "proses";
                         let row = `<tr>
@@ -386,6 +417,7 @@
                                 </div>
                                 <span class="status ${statusClass}">${item.status}</span>
                             </td>
+                            
                         </tr>`;
                         tbody.innerHTML += row;
                     });
